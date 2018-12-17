@@ -1,0 +1,130 @@
+<html>
+<% include partials/head.ejs %>
+
+  <body>
+    <% include partials/navigation.ejs %>
+
+      <div class="parallax-container valign-wrapper">
+        <div class="section no-pad-bot">
+          <div class="container">
+            <div class="row center">
+              <h5 class="header col s12 light">Your source for online video streaming.</h5>
+            </div>
+          </div>
+        </div>
+        <div class="parallax"><img src="assets/img/background.jpg" alt="Matterhorn"></div>
+      </div>
+
+      <div class="container">
+        <h1>Home.</h1>
+        <div class="section">
+          <div class="card-panel light-blue lighten-5">
+            You are logged in as <b><%= session.username %>.</b>
+
+            <br><br>
+
+            <button class="btn waves-effect waves-light light-blue lighten-2" type="submit" onclick="window.location='/library';">To the library
+              <i class="material-icons right">library_books</i>
+            </button>
+
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <br>
+
+        <div class="section">
+          <h4>Live Chat</h4>
+          <br>
+          <form id="messageForm">
+            <div class="row">
+              <div class="col s12">
+
+                <div class="input-field col s12">
+                  <input placeholder="" id="message" name="message" type="text" class="" required>
+                  <label for="message">Message</label>
+                </div>
+
+                <br>
+
+                <button class="btn waves-effect waves-light red lighten-2" type="submit">Send
+                  <i class="material-icons right">send</i>
+                </button>
+
+              </div>
+            </div>
+          </form>
+
+          <br>
+
+          <div id="chat">
+          </div>
+        </div>
+
+        <!--
+        <div class="divider"></div>
+        <br>
+
+        <div class="section">
+          <h4>Recommended</h4>
+          coming...
+        </div>
+
+        <iframe src="https://openload.co/embed/Hk3ldRcFNDk/The.100.S01E02.German.DVDRip.x264-iNTENTiON.mkv" target="_self"></iframe>
+        -->
+
+        <% include partials/footer.ejs %>
+
+        <% include partials/scripts.ejs %>
+
+          <script>
+            function showToast() {
+              Materialize.toast('I am a toast!', 4000) // 4000 is the duration of the toast
+            }
+
+            $(function() {
+              var socket = io.connect();
+              var $messageForm = $('#messageForm');
+              var $message = $('#message');
+
+              var $chat = $('#chat');
+
+              var $streamButton = $('#strm');
+
+              /*//Join the Account Room
+              socket.emit('join room', {username: '<%= session.username %>'});
+
+              socket.on('joined room', function(data){
+                console.log('Users in Room: ' + data.members);
+              });*/
+
+              $messageForm.submit(function(e) {
+                e.preventDefault();
+                var msg = $message.val();
+                if (msg !== '') {
+                  socket.emit('send message', {
+                    username: '<%= session.username %>',
+                    msg: msg
+                  });
+                  $message.val('');
+                }
+              });
+
+              socket.on('new message', function(data) {
+                $chat.append('<div class="card-panel red lighten-5"><b>' + data.username + '</b>: ' + data.msg + '</div>');
+              });
+
+              /*function submitMessage(e){
+                if (e.keyCode == 13) {
+                  e.preventDefault();
+                  var msg = $message.val();
+                  socket.emit('send message', {username: '<%= session.username %>', msg: msg});
+                  $message.val('');
+                }
+              }*/
+
+            });
+          </script>
+  </body>
+
+</html>

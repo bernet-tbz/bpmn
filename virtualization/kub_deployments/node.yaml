@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamdream-node
+  labels:
+    app: streamdream
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8888
+    protocol: TCP
+  selector:
+    app: streamdream
+---
+apiVersion: apps/v1beta2 # for versions before 1.8.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: streamdream-node
+  labels:
+    app: streamdream
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: streamdream
+      tier: nodejs
+  template:
+    metadata:
+      labels:
+        app: streamdream
+        tier: nodejs
+    spec:
+      containers:
+      - name: streamdream
+        image: itsfrdm/streamdream-node:1.0.0
+        env:
+        - name: DATABASE_HOST
+          value: streamdream-mysql
+        - name: DB_PASSWORD
+          value: pw1mysql
+        ports:
+        - containerPort: 8888
+          name: streamdream
+        volumeMounts:
+        - name: streamdream-data
+          mountPath: /StreamDream/data
+      volumes:
+      - name: streamdream-data
+        hostPath:
+          path: /Users/yvokeller/Development/StreamDream/data
+          type: Directory

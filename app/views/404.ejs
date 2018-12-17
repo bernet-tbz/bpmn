@@ -1,0 +1,53 @@
+<html>
+<% include partials/head.ejs %>
+<body>
+    <% include partials/navigation.ejs %>
+    <div class='container'>
+      <h1>404.</h1>
+      <h2>Oops, you've done something wrong.</h2>
+
+      <button class="btn waves-effect waves-light grey lighten-1 left" onclick="sendPost2()">POST
+        <i class="material-icons right">edit</i>
+      </button>
+    </div>
+
+
+    <script>
+      function sendPost(){
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('POST', 'http://109.230.227.9:8081/api/login', true);
+
+        xhr.setRequestHeader('Content-Type', 'form-data');
+
+        xhr.addEventListener('load', () => {
+          callback(xhr.responseText)
+        });
+
+        xhr.send("username=root&password=1234");
+      }
+
+      function sendPost2(){
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://109.230.227.9:8081/api/login', true);
+
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+              console.log(xhr.responseText)
+              // Request finished. Do processing here.
+            }
+        }
+
+        xhr.addEventListener("load", () => {
+          console.log('event called')
+        });
+
+        xhr.send("username=root&password=1234");
+      }
+
+    </script>
+</body>
+</html>

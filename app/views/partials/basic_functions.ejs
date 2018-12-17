@@ -1,0 +1,8 @@
+<script>
+  var socket = io.connect();
+
+  // Show Toast on Response
+  socket.on('toast response', function(data){
+    Materialize.toast(data.msg, 4000);
+  });
+</script>
