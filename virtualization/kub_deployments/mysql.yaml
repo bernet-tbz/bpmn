@@ -1,34 +1,34 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: streamdream-mysql
+  name: bpmn-mysql
   labels:
-    app: streamdream
+    app: bpmn
 spec:
   ports:
-    - port: 3306
+    - port: 3308
   selector:
-    app: streamdream
+    app: bpmn
     tier: mysql
   clusterIP: None
 ---
 apiVersion: apps/v1beta2 # for versions before 1.8.0 use apps/v1beta1
 kind: Deployment
 metadata:
-  name: streamdream-mysql
+  name: bpmn-mysql
   labels:
-    app: streamdream
+    app: bpmn
 spec:
   selector:
     matchLabels:
-      app: streamdream
+      app: bpmn
       tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: streamdream
+        app: bpmn
         tier: mysql
     spec:
       containers:
@@ -36,22 +36,22 @@ spec:
         name: mysql
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: pw1mysql
+          value: pw2mysql
         ports:
-        - containerPort: 3306
+        - containerPort: 3308
           name: mysql
         volumeMounts:
-        - name: streamdream-mysql-storage
+        - name: bpmn-mysql-storage
           mountPath: /var/lib/mysql
       volumes:
-      - name: streamdream-mysql-storage
+      - name: bpmn-mysql-storage
         PersistentVolumeClaim:
-          claimName: streamdream-mysql-pv-claim
+          claimName: bpmn-mysql-pv-claim
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: streamdream-mysql-pv-claim
+  name: bpmn-mysql-pv-claim
 spec:
   accessModes:
     - ReadWriteOnce
