@@ -4,127 +4,113 @@
   <body>
     <% include partials/navigation.ejs %>
 
-      <div class="parallax-container valign-wrapper">
+    <div class="parallax-container valign-wrapper">
         <div class="section no-pad-bot">
           <div class="container">
             <div class="row center">
-              <h5 class="header col s12 light">Your source for online video streaming.</h5>
+              <h5 class="header col s12 light">Camunda BPMN process management demo.</h5>
             </div>
           </div>
         </div>
-        <div class="parallax"><img src="assets/img/background.jpg" alt="Matterhorn"></div>
+        <div class="parallax"><img src="assets/img/background4.jpg" alt="Lanzarote"></div>
       </div>
 
       <div class="container">
-        <h1>Home.</h1>
+        <h1>Make an Order.</h1>
         <div class="section">
           <div class="card-panel light-blue lighten-5">
-            You are logged in as <b><%= session.username %>.</b>
 
-            <br><br>
+            <br>
 
-            <button class="btn waves-effect waves-light light-blue lighten-2" type="submit" onclick="window.location='/library';">To the library
-              <i class="material-icons right">library_books</i>
+            <div class="row">
+              <div class="col s12 center">
+
+                <div class="input-field col s12">
+                  <label for="vorname" class="active">Vorname</label>
+                  <input name="vorname" id="vorname" class="validate"></input>
+                </div>
+
+                <div class="input-field col s12">
+                  <label for="nachname" class="active">Nachname</label>
+                  <input name="nachname" id="nachname" class="materialize-textarea"></input>
+                </div>
+
+                <div class="input-field col s12">
+                  <label for="adresse" class="active">Adresse</label>
+                  <input name="adresse" id="adresse" class="materialize-textarea"></input>
+                </div>
+
+                <div class="input-field col s12">
+                  <label for="artikel" class="active">Artikel</label>
+                  <input name="artikel" id="artikel" class="materialize-textarea"></input>
+                </div>
+      
+              </div>
+            </div>
+      
+            <button class="btn waves-effect waves-light light-blue lighten-2" onclick="execPost()">Send Order
+              <i class="material-icons right">send</i>
             </button>
 
           </div>
         </div>
 
-        <div class="divider"></div>
-        <br>
+      </div>
+    
+      <% include partials/footer.ejs %>
 
-        <div class="section">
-          <h4>Live Chat</h4>
-          <br>
-          <form id="messageForm">
-            <div class="row">
-              <div class="col s12">
+      <% include partials/scripts.ejs %>
 
-                <div class="input-field col s12">
-                  <input placeholder="" id="message" name="message" type="text" class="" required>
-                  <label for="message">Message</label>
-                </div>
+      <script>
+        $(function() {
+          var socket = io.connect();
+        });
 
-                <br>
+        function execPost(){
+          var vorname = $('#vorname').val();
+          var nachname = $('#nachname').val();
+          var adresse = $('#adresse').val();
+          var artikel = $('#artikel').val();
 
-                <button class="btn waves-effect waves-light red lighten-2" type="submit">Send
-                  <i class="material-icons right">send</i>
-                </button>
+          var pay = JSON.parse('{"variables": {"vorname" : {"value" : "' + vorname + '","type": "String"}, "nachname" : {"value" : "' + nachname + '","type": "String"}, "adresse" : {"value" : "' + adresse + '","type": "String"}, "artikel" : {"value" : "' + artikel + '","type": "String"}}, "businessKey" : "myBusinessKey", "startInstructions" : [{"type": "startBeforeActivity","activityId": "Task_0y4o8li"}]}')
+          console.log(pay)
+          
+          var hostname = 'http://localhost:8080/engine-rest'
 
-              </div>
-            </div>
-          </form>
+          backendPost(hostname + '/process-definition/key/bestellung_verarbeiten/start', pay, function(data) {
+            console.log(data)
+            
+            console.log('Order opened as process ' + data.id + data.links[0].href)
 
-          <br>
+            var toastText = 'Order opened: <b>' + data.id + '</b> - <a href="' + data.links[0].href + '">More Info</a>'
+            Materialize.toast(toastText)
 
-          <div id="chat">
-          </div>
-        </div>
+            toastText = 'Submitted values: <a href="' + data.links[0].href + '/variables' + '">Show Data</a>'
+            Materialize.toast(toastText)
+          })
+        }
 
-        <!--
-        <div class="divider"></div>
-        <br>
+        function backendPost(route, payload, callback) {
+          const xhr = new XMLHttpRequest()
+          xhr.open("POST", route, true)
+          xhr.setRequestHeader('Content-Type', "application/json");
+          xhr.addEventListener("load", () => {
+            callback(JSON.parse(xhr.responseText, xhr))
+          })
+          xhr.send(JSON.stringify(payload))
+        }
 
-        <div class="section">
-          <h4>Recommended</h4>
-          coming...
-        </div>
+        function backendGET(route, callback) {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", route, true);
 
-        <iframe src="https://openload.co/embed/Hk3ldRcFNDk/The.100.S01E02.German.DVDRip.x264-iNTENTiON.mkv" target="_self"></iframe>
-        -->
+          xhr.addEventListener("load", () => {
+            callback(JSON.parse(xhr.responseText, xhr))
+          })
 
-        <% include partials/footer.ejs %>
-
-        <% include partials/scripts.ejs %>
-
-          <script>
-            function showToast() {
-              Materialize.toast('I am a toast!', 4000) // 4000 is the duration of the toast
-            }
-
-            $(function() {
-              var socket = io.connect();
-              var $messageForm = $('#messageForm');
-              var $message = $('#message');
-
-              var $chat = $('#chat');
-
-              var $streamButton = $('#strm');
-
-              /*//Join the Account Room
-              socket.emit('join room', {username: '<%= session.username %>'});
-
-              socket.on('joined room', function(data){
-                console.log('Users in Room: ' + data.members);
-              });*/
-
-              $messageForm.submit(function(e) {
-                e.preventDefault();
-                var msg = $message.val();
-                if (msg !== '') {
-                  socket.emit('send message', {
-                    username: '<%= session.username %>',
-                    msg: msg
-                  });
-                  $message.val('');
-                }
-              });
-
-              socket.on('new message', function(data) {
-                $chat.append('<div class="card-panel red lighten-5"><b>' + data.username + '</b>: ' + data.msg + '</div>');
-              });
-
-              /*function submitMessage(e){
-                if (e.keyCode == 13) {
-                  e.preventDefault();
-                  var msg = $message.val();
-                  socket.emit('send message', {username: '<%= session.username %>', msg: msg});
-                  $message.val('');
-                }
-              }*/
-
-            });
-          </script>
+          xhr.send()
+        };
+      </script>
   </body>
 
 </html>

@@ -39,6 +39,6 @@ spec:
         - name: DB_PASSWORD
           value: pw2mysql
         ports:
-        - containerPort: 8787
+        - containerPort: 8686
           name: bpmn
        
