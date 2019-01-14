@@ -34,5 +34,5 @@ spec:
       - name: bpmn
         image: itsfrdm/bpmn-node:1.0.0
         ports:
-        - containerPort: 8686
+        - containerPort: 8787
           name: bpmn
