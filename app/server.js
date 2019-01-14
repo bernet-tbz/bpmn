@@ -3,6 +3,7 @@ var app = express();
 
 app.set('view engine', 'ejs')
 
+
 //Cookie Parser
 var cookieParser = require('cookie-parser')
 app.use(cookieParser());
@@ -19,6 +20,8 @@ var async = require('async');
 var urlencodedParser = bodyParser.urlencoded({
   extended: false
 });
+
+app.set('views', path.join(__dirname, '/views'));
 
 //Manage Requested Static Files
 app.use('/assets', express.static('assets'));

@@ -33,12 +33,6 @@ spec:
       containers:
       - name: bpmn
         image: itsfrdm/bpmn-node:1.0.0
-        env:
-        - name: DATABASE_HOST
-          value: bpmn-mysql
-        - name: DB_PASSWORD
-          value: pw2mysql
         ports:
         - containerPort: 8686
           name: bpmn
-       
