@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bpmn-camunda
+  namespace: bpmn
+  labels:
+    app: bpmn
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: bpmn
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  generation: 1
+  labels:
+    app: bpmn
+  name: bpmn-camunda
+  namespace: bpmn
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: bpmn
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: bpmn
+    spec:
+      containers:
+      - image: camunda/camunda-bpm-platform:latest
+        imagePullPolicy: Always
+        name: bpmn-camunda
+      ports:
+      - containerPort: 8080

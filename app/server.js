@@ -1,9 +1,6 @@
 var express = require('express');
 var app = express();
 
-app.set('view engine', 'ejs')
-
-
 //Cookie Parser
 var cookieParser = require('cookie-parser')
 app.use(cookieParser());
@@ -21,6 +18,8 @@ var urlencodedParser = bodyParser.urlencoded({
   extended: false
 });
 
+//Configure EJS
+app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'));
 
 //Manage Requested Static Files
